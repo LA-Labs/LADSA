@@ -11,19 +11,19 @@ public struct Stack<Element> {
     
     private var array: [Element] = []
     
-    mutating func push(_ element: Element) {
+    public mutating func push(_ element: Element) {
         array.append(element)
     }
     
-    mutating func pop() -> Element? {
+    public mutating func pop() -> Element? {
         return array.popLast()
     }
     
-    func peek() -> Element? {
+    public func peek() -> Element? {
         return array.last
     }
     
-    func isEmpty() -> Bool {
+    public func isEmpty() -> Bool {
         return array.isEmpty
     }
 }

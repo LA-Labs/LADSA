@@ -7,18 +7,18 @@
 
 import Foundation
 
-class UniqueQueue<T: Hashable> {
+public class UniqueQueue<T: Hashable> {
     
     private var elements: [T] = []
     private var uniqueElemnt: Set<T> = Set<T>()
     
-    func enqueue(_ value: T) {
+    public func enqueue(_ value: T) {
         if uniqueElemnt.insert(value).inserted {
             elements.append(value)
         }
     }
     
-    func dequeue() -> T? {
+    public func dequeue() -> T? {
         guard !elements.isEmpty else {
             return nil
         }
@@ -27,15 +27,15 @@ class UniqueQueue<T: Hashable> {
         return elemnt
     }
     
-    var head: T? {
+    public var head: T? {
         return elements.first
     }
     
-    var tail: T? {
+    public var tail: T? {
         return elements.last
     }
     
-    var count: Int {
+    public var count: Int {
         elements.count
     }
 }

@@ -7,7 +7,7 @@
 
 import Foundation
 
-class Pool<T> {
+public class Pool<T> {
     private let accessQueue = DispatchQueue(label: "com.shuttefly.synchronizedArray", attributes: .concurrent)
 
     
@@ -16,14 +16,14 @@ class Pool<T> {
     // must be called from main queue.
     private var objectPool = [T]()
     
-    init(items:[T]) {
+    public init(items:[T]) {
         objectPool.reserveCapacity(objectPool.count)
         for item in items {
             objectPool.append(item)
         }
     }
     
-    func acquire() -> T? {
+    public func acquire() -> T? {
         // return the first object in the array
         // FIFO
         self.accessQueue.sync(flags: .barrier) {
@@ -31,7 +31,7 @@ class Pool<T> {
         }
     }
     
-    func release(_ item: T) {
+    public func release(_ item: T) {
         self.accessQueue.sync(flags: .barrier) {
             self.objectPool.append(item)
         }
