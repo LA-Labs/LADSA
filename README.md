@@ -1,3 +1,3 @@
 # LADSA
 
-A description of this package.
+LA-Labs Data Structure and Algorithm.
