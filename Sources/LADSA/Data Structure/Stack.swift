@@ -11,6 +11,7 @@ public struct Stack<Element> {
     
     private var array: [Element] = []
     
+    public init () {}
     public mutating func push(_ element: Element) {
         array.append(element)
     }
