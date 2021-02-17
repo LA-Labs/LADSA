@@ -1,5 +1,5 @@
 //
-//  Queue.swift
+//  UniqueQueue.swift
 //  Fly.ai
 //
 //  Created by amir.lahav on 21/10/2020.
