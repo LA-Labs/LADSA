@@ -7,13 +7,13 @@
 
 import Foundation
 
-public struct SamplePair<T: Numeric & Comparable & BinaryFloatingPoint> {
+public struct SamplePair {
     
-    let index1: T
-    let index2: T
-    let distance: T
+    let index1: Int
+    let index2: Int
+    let distance: Double
     
-    init(idx1: T, idx2: T, distance: T = 1) {
+    init(idx1: Int, idx2: Int, distance: Double = 1) {
         self.distance = distance
         if (idx1 < idx2) {
             index1 = idx1
@@ -25,23 +25,24 @@ public struct SamplePair<T: Numeric & Comparable & BinaryFloatingPoint> {
     }
 }
 
-public struct OrderedSamplePair<T: Numeric & Comparable & BinaryFloatingPoint> {
-    let index1: T
-    let index2: T
-    let distance: T
+public struct OrderedSamplePair {
     
-    init(idx1: T, idx2: T, distance: T = 1) {
+    let index1: Int
+    let index2: Int
+    let distance: Double
+    
+    init(idx1: Int, idx2: Int, distance: Double = 1) {
         self.distance = distance
         index1 = idx1
         index2 = idx2
     }
 }
 
-public struct Pair<T: Numeric & Comparable & BinaryFloatingPoint> {
-    let index1: T
-    let index2: T
+public struct Pair {
+    let index1: Int
+    let index2: Int
     
-    init(idx1: T, idx2: T) {
+    init(idx1: Int, idx2: Int) {
         index1 = idx1
         index2 = idx2
     }
@@ -49,12 +50,71 @@ public struct Pair<T: Numeric & Comparable & BinaryFloatingPoint> {
 
 public class ChineseWhispers {
     
-    public static func chinese_whispers<T>(
+    public init() {
+        
+    }
+    
+    func convertUnorderedToOrdered(edges: [SamplePair]) -> [OrderedSamplePair] {
+        var orderdPairs: [OrderedSamplePair] = []
+        orderdPairs.reserveCapacity(edges.count*2)
+        
+        for (i, _) in edges.enumerated() {
+            orderdPairs.append(OrderedSamplePair(idx1: edges[i].index1, idx2: edges[i].index2, distance: edges[i].distance))
+            if edges[i].index1 != edges[i].index2 {
+                orderdPairs.append(OrderedSamplePair(idx1: edges[i].index2, idx2: edges[i].index1, distance: edges[i].distance))
+            }
+        }
+        return orderdPairs.sorted { (a, b) -> Bool in
+            a.index1 < b.index1 || (a.index1 == b.index1 && a.index2 < b.index2)
+        }
+    }
+    
+    func findNeighborRanges(edges: [OrderedSamplePair]) -> [Pair] {
+        let numNodes: Int = maxIndexPlusOne(pairs: edges)
+        var neighbors: [Pair] = Array(repeating: Pair(idx1: 0, idx2: 0), count: Int(numNodes))
+        var cur_node: Int = 0
+        var start_idx: Int = 0
+        
+        for (index, value) in edges.enumerated() {
+            if value.index1 != cur_node {
+                neighbors[Int(cur_node)] = Pair(idx1: start_idx,
+                                                idx2: index)
+                start_idx = index
+                cur_node = value.index1
+            }
+        }
+        if !neighbors.isEmpty {
+            neighbors[Int(cur_node)] = Pair(idx1: start_idx,
+                                            idx2: edges.count)
+        }
+        return neighbors
+    }
+    
+    func maxIndexPlusOne(pairs: [OrderedSamplePair]) -> Int {
+        if pairs.count == 0 {
+            return 0
+        }else {
+            var max_idx: Int = 0
+            for (_, value) in pairs.enumerated() {
+                if value.index1 > max_idx {
+                    max_idx = value.index1
+                }
+                if value.index2 > max_idx {
+                    max_idx = value.index2
+                }
+            }
+            return max_idx + 1
+        }
+        
+    }
+    
+    
+    public func chinese_whispers<T>(
         objects: [T],
         distanceFunction: (T, T) -> Double,
         eps: Double,
         numIterations: Int) -> [Int] {
-        var edges: [SamplePair<Double>] = []
+        var edges: [SamplePair] = []
         guard !objects.isEmpty else {
             return []
         }
@@ -62,24 +122,24 @@ public class ChineseWhispers {
             for j in i...objects.count-1 {
                 let length = distanceFunction(objects[i], objects[j])
                 if length < eps {
-                    edges.append(SamplePair(idx1: Double(i), idx2: Double(j)))
+                    edges.append(SamplePair(idx1: i, idx2: j))
                 }
             }
         }
         return chinese_whispers(edges: edges, numIterations: numIterations)
     }
     
-    public static func chinese_whispers<T: Numeric & Comparable & BinaryFloatingPoint>(
-        edges: [SamplePair<T>],
+    public func chinese_whispers(
+        edges: [SamplePair],
         numIterations: Int) -> [Int] {
-        let orderdEdges = EdgeListGraph.convertUnorderedToOrdered(edges: edges)
+        let orderdEdges = convertUnorderedToOrdered(edges: edges)
         return chinese_whispers(edges: orderdEdges, numIterations: numIterations)
     }
     
-    public static func chinese_whispers<T: Numeric & Comparable & BinaryFloatingPoint>(
-        edges: [OrderedSamplePair<T>],
+    public func chinese_whispers(
+        edges: [OrderedSamplePair],
         numIterations: Int) -> [Int] {
-        let neighbors = EdgeListGraph.findNeighborRanges(edges: edges)
+        let neighbors = findNeighborRanges(edges: edges)
         var labels: [Int] = Array<Int>(repeating: 0, count: neighbors.count)
         for i in 0...neighbors.count-1 {
             labels[i] = i
@@ -124,7 +184,7 @@ public class ChineseWhispers {
         return labels
     }
     
-    public static func group<T>(objects: [T], labels: [Int]) -> [[T]] {
+    public func group<T>(objects: [T], labels: [Int]) -> [[T]] {
         var cluster: [Int : [T]] = [:]
         for (i, value) in labels.enumerated() {
             if cluster[value] != nil {
