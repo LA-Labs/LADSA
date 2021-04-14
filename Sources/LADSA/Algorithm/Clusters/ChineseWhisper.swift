@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct SamplePair<T: Comparable> {
+public struct SamplePair<T: Comparable> {
     
     let index1: T
     let index2: T
@@ -25,7 +25,7 @@ struct SamplePair<T: Comparable> {
     }
 }
 
-struct OrderedSamplePair<T> {
+public struct OrderedSamplePair<T> {
     
     let index1: T
     let index2: T
@@ -38,7 +38,7 @@ struct OrderedSamplePair<T> {
     }
 }
 
-struct Pair<T> {
+public struct Pair<T> {
     let index1: Int
     let index2: Int
     
@@ -73,14 +73,14 @@ public class ChineseWhisper {
         return cluster(edges: edges, numIterations: numIterations)
     }
     
-    func cluster(
+    public func cluster(
         edges: [SamplePair<Int>],
         numIterations: Int) -> [Int] {
         let orderedEdges = convertUnorderedToOrdered(edges: edges)
         return cluster(edges: orderedEdges, numIterations: numIterations)
     }
     
-    func cluster(
+    public func cluster(
         edges: [OrderedSamplePair<Int>],
         numIterations: Int) -> [Int] {
         let neighbors = findNeighborRanges(edges: edges)
@@ -128,7 +128,7 @@ public class ChineseWhisper {
         return labels
     }
     
-    func group<T>(objects: [T], labels: [Int]) -> [[T]] {
+    public func group<T>(objects: [T], labels: [Int]) -> [[T]] {
         precondition(objects.count == labels.count)
         var cluster: [Int : [T]] = [:]
         for (i, value) in labels.enumerated() {
